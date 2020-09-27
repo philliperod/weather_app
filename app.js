@@ -12,34 +12,31 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  console.log(req.body.cityName);
-  console.log('POST request received');
-  // this will receive the POST request from the client and log the request
+  const query = req.body.cityName;
+  const apiKey = '3c005018751f1dcc72c1d0f6c2e92f7b';
+  const unit = 'imperial';
+  const url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&q=' + query + '&units=' + unit;
+  https.get(url, (response) => {
+    console.log(response.statusCode);
+    response.on('data', (data) => {
+      //   const object = {
+      //     name: 'Phillipe',
+      //     favoriteDrink: 'water'
+      //   };
+      //   JSON.stringify(object);
+      //   console.log(object);
+      const weatherData = JSON.parse(data);
+      const temp = weatherData.main.temp;
+      const weatherDescription = weatherData.weather[0].description;
+      const weatherIcon = weatherData.weather[0].icon;
+      const imageURL = 'http://openweathermap.org/img/wn/' + weatherIcon + '@2x.png';
+      res.write('<p>The temperature for ' + query + ' is ' + temp + ' degrees Farenheit.</p>');
+      res.write('<p>The weather outside looks about ' + weatherDescription + ' at the moment.</p>');
+      res.write('<img src=' + imageURL + '>');
+      res.send();
+    });
+  });
 });
-
-// const apiKey = '3c005018751f1dcc72c1d0f6c2e92f7b';
-// const query = 'Dallas';
-// const unit = 'imperial';
-// const url = 'https://api.openweathermap.org/data/2.5/weather?appid=' + apiKey + '&q=' + query + '&units=' + unit;
-// https.get(url, (response) => {
-//   console.log(response.statusCode);
-//   response.on('data', (data) => {
-//     //   const object = {
-//     //     name: 'Phillipe',
-//     //     favoriteDrink: 'water'
-//     //   };
-//     //   JSON.stringify(object);
-//     //   console.log(object);
-//     const weatherData = JSON.parse(data);
-//     const temp = weatherData.main.temp;
-//     const weatherDescription = weatherData.weather[0].description;
-//     const weatherIcon = weatherData.weather[0].icon;
-//     const imageURL = 'http://openweathermap.org/img/wn/' + weatherIcon + '@2x.png';
-//     res.write('<p>The temperature for Dallas is ' + temp + ' degrees Farenheit.</p>');
-//     res.write('<p>The weather outside looks about ' + weatherDescription + ' at the moment.</p>');
-//     res.write('<img src=' + imageURL + '>');
-//     res.send();
-//   });
 
 // this will perform a get request across the internet using the http protocol
 // (https.get) pass the variable url (which is an actual url) and once receive a response back then log the status code
@@ -52,7 +49,6 @@ app.post('/', (req, res) => {
 // to send multiple responses you can use res.write() then use res.send() as a standalone function to send out the multiple responses
 // to send an image, store the object into a variable, find the API URL that is needed and concatenate the variable in the right location for a new variable
 // use res.write with a <img> tag and concatenate with the new variable in the src attribute
-// });
 app.listen(3000, () => {
   console.log('Server is running on port 3000.');
 });
