@@ -9,16 +9,21 @@ app.get('/', (req, res) => {
   https.get(url, (response) => {
     console.log(response.statusCode);
     response.on('data', (data) => {
-      const weatherData = JSON.parse(data);
       //   const object = {
       //     name: 'Phillipe',
       //     favoriteDrink: 'water'
       //   };
       //   JSON.stringify(object);
-      console.log(weatherData);
       //   console.log(object);
-      const temp = weatherData.weather[0].description;
-      console.log(temp);
+      const weatherData = JSON.parse(data);
+      const temp = weatherData.main.temp;
+      const weatherDescription = weatherData.weather[0].description;
+      const weatherIcon = weatherData.weather[0].icon;
+      const imageURL = 'http://openweathermap.org/img/wn/' + weatherIcon + '@2x.png';
+      res.write('<p>The temperature for Dallas is ' + temp + ' degrees Farenheit.</p>');
+      res.write('<p>The weather outside looks about ' + weatherDescription + ' at the moment.</p>');
+      res.write('<img src=' + imageURL + '>');
+      res.send();
     });
   });
 
@@ -29,7 +34,10 @@ app.get('/', (req, res) => {
   // JSON.stringify() will convert the object into a string or opposit of JSON.parse()
   // if you wanted to obtain a certain piece of data in a object, you use object-oriented javascript code
   // if an object has a string(it's an array with one item) for its value and you want to specify index value then object
-  res.send('Server is up and running.');
+  // to pass the data back with app.get, you have to use the response [app.get('/', (req, RES))]; the response is from our server that is sent to the user
+  // to send multiple responses you can use res.write() then use res.send() as a standalone function to send out the multiple responses
+  // to send an image, store the object into a variable, find the API URL that is needed and concatenate the variable in the right location for a new variable
+  // use res.write with a <img> tag and concatenate with the new variable in the src attribute
 });
 app.listen(3000, () => {
   console.log('Server is running on port 3000.');
